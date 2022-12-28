@@ -9,7 +9,8 @@ import {
     updateProfile,
 } from "firebase/auth";
 
-import { auth } from "../firebase/firebase-config";
+import { auth, db } from "../firebase/firebase-config";
+import { addDoc, collection } from "firebase/firestore";
 
 const FirebaseAuth = () => {
     const [values, setValues] = useState({
@@ -31,16 +32,27 @@ const FirebaseAuth = () => {
     const handleCreateUser = async (e) => {
         e.preventDefault();
         try {
-            const user = await createUserWithEmailAndPassword(
+            //credential
+            const cred = await createUserWithEmailAndPassword(
                 auth,
                 values.email,
                 values.password
             );
+
+            // show user's name
             await updateProfile(auth.currentUser, {
                 displayName: "ngo kien",
             });
-            setUserInfo(user);
+            setUserInfo(cred);
             console.log("success!");
+
+            // thêm Collection user vào Firestore
+            const useRef = collection(db, "users");
+            await addDoc(useRef, {
+                email: values.email,
+                password: values.password,
+                id: cred.user.uid,
+            });
         } catch (error) {
             console.log(error);
         }
