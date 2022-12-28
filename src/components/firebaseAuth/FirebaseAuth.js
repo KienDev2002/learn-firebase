@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signOut,
     getAuth,
+    onAuthStateChanged,
 } from "firebase/auth";
 
 import { auth } from "../firebase/firebase-config";
-import { async } from "@firebase/util";
 
 const FirebaseAuth = () => {
     const [values, setValues] = useState({
@@ -17,15 +17,24 @@ const FirebaseAuth = () => {
     });
 
     const [userInfo, setUserInfo] = useState("");
+    useEffect(() => {
+        onAuthStateChanged(auth, (currentUser) => {
+            if (currentUser) {
+                setUserInfo(currentUser);
+            } else {
+                setUserInfo("");
+            }
+        });
+    }, []);
 
     const handleCreateUser = async (e) => {
         e.preventDefault();
-        const user = await createUserWithEmailAndPassword(
+        await createUserWithEmailAndPassword(
             auth,
             values.email,
             values.password
         );
-        if (user) setUserInfo(user);
+        // if (user) setUserInfo(user);
         console.log("create user successfully");
     };
 
@@ -36,7 +45,10 @@ const FirebaseAuth = () => {
         });
     };
 
-    console.log(values);
+    const handleSignOut = () => {
+        signOut(auth);
+    };
+
     return (
         <div className="w-full max-w-[500px] mx-auto bg-white shadow-lg p-5">
             <div className="mb-10">
@@ -63,6 +75,18 @@ const FirebaseAuth = () => {
                         Register
                     </button>
                 </form>
+
+                {/* signOut */}
+                <div className="flex items-center mt-10 gap-x-5">
+                    <span>{userInfo.email}</span>
+                    <button
+                        onClick={handleSignOut}
+                        type="submit"
+                        className="w-full p-3 text-sm font-medium text-white bg-blue-500 rounded-lg"
+                    >
+                        SignOut
+                    </button>
+                </div>
             </div>
         </div>
     );
