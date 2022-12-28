@@ -8,6 +8,7 @@ import {
     onSnapshot,
     serverTimestamp,
     updateDoc,
+    getDoc,
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { db } from "./firebase-config";
@@ -20,6 +21,7 @@ const FirebaseApp = () => {
     const [author, setAuthor] = useState("");
     const [postId, setPostId] = useState("");
     const [posts, setPosts] = useState([]);
+    const [singlePosts, setSinglePosts] = useState("");
 
     useEffect(() => {
         //1. ko phải realtime
@@ -49,6 +51,17 @@ const FirebaseApp = () => {
                 });
             });
             setPosts(posts);
+        });
+
+        // truy xuất 1 Document với getDoc
+        const docRefSingle = doc(db, "posts", "p0S39QWDISrjAb7Uc1wn");
+        // getDoc(docRefSingle).then((doc) => {
+        //     console.log(doc.id, doc.data());
+        // });
+
+        //document in realtime: ko cần reload trang vẫn hiển thị ngay
+        onSnapshot(docRefSingle, (doc) => {
+            console.log(doc.id, doc.data());
         });
     }, []);
 
