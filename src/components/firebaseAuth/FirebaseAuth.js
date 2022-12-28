@@ -6,6 +6,7 @@ import {
     signOut,
     getAuth,
     onAuthStateChanged,
+    updateProfile,
 } from "firebase/auth";
 
 import { auth } from "../firebase/firebase-config";
@@ -29,13 +30,20 @@ const FirebaseAuth = () => {
 
     const handleCreateUser = async (e) => {
         e.preventDefault();
-        await createUserWithEmailAndPassword(
-            auth,
-            values.email,
-            values.password
-        );
-        // if (user) setUserInfo(user);
-        console.log("create user successfully");
+        try {
+            const user = await createUserWithEmailAndPassword(
+                auth,
+                values.email,
+                values.password
+            );
+            await updateProfile(auth.currentUser, {
+                displayName: "ngo kien",
+            });
+            setUserInfo(user);
+            console.log("success!");
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     const handleInputChange = (e) => {
@@ -78,7 +86,9 @@ const FirebaseAuth = () => {
 
                 {/* signOut */}
                 <div className="flex items-center mt-10 gap-x-5">
-                    <span>{userInfo.email}</span>
+                    <span className="flex-1">
+                        {userInfo.email && userInfo.displayName}
+                    </span>
                     <button
                         onClick={handleSignOut}
                         type="submit"
