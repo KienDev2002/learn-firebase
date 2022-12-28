@@ -11,6 +11,7 @@ import {
 
 import { auth, db } from "../firebase/firebase-config";
 import { addDoc, collection } from "firebase/firestore";
+import { async } from "@firebase/util";
 
 const FirebaseAuth = () => {
     const [values, setValues] = useState({
@@ -69,6 +70,18 @@ const FirebaseAuth = () => {
         signOut(auth);
     };
 
+    // login user
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        const cred = await signInWithEmailAndPassword(
+            auth,
+            values.email,
+            values.password
+        );
+        setUserInfo(cred);
+        console.log("Login successfully");
+    };
+
     return (
         <div className="w-full max-w-[500px] mx-auto bg-white shadow-lg p-5">
             <div className="mb-10">
@@ -109,6 +122,33 @@ const FirebaseAuth = () => {
                         SignOut
                     </button>
                 </div>
+            </div>
+
+            {/* Login */}
+            <div>
+                <h1 className="font-semibold text-center">Handle login</h1>
+                <form onSubmit={handleLogin}>
+                    <input
+                        name="email"
+                        type="text"
+                        className="w-full p-3 mb-5 border border-gray-300 rounded outline-none focus:border-blue-500"
+                        onChange={handleInputChange}
+                        placeholder="Enter your email address"
+                    />
+                    <input
+                        name="password"
+                        type="password"
+                        className="w-full p-3 mb-5 border border-gray-300 rounded outline-none focus:border-blue-500"
+                        onChange={handleInputChange}
+                        placeholder="Enter your password"
+                    />
+                    <button
+                        type="submit"
+                        className="w-full p-3 text-sm font-medium text-white bg-blue-500 rounded-lg"
+                    >
+                        Login
+                    </button>
+                </form>
             </div>
         </div>
     );
