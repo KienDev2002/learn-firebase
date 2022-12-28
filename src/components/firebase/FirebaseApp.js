@@ -5,7 +5,7 @@ import {
     deleteDoc,
     doc,
     onSnapshot,
-    snapshotEqual,
+    serverTimestamp,
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { db } from "./firebase-config";
@@ -55,6 +55,7 @@ const FirebaseApp = () => {
         addDoc(colRef, {
             title,
             author,
+            createdAt: serverTimestamp(),
         })
             .then(() => {
                 console.log("succes");
@@ -62,6 +63,7 @@ const FirebaseApp = () => {
             .catch((error) => {
                 console.log(error);
             });
+        e.reset();
     };
 
     const handleRemovePost = async (e) => {
