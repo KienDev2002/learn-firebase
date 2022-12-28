@@ -1,9 +1,12 @@
 import FirebaseApp from "./components/firebase/FirebaseApp";
+import FirebaseAuth from "./components/firebaseAuth/FirebaseAuth";
 
 function App() {
     return (
         <div>
-            <FirebaseApp></FirebaseApp>
+            {/* <FirebaseApp></FirebaseApp> */}
+
+            <FirebaseAuth></FirebaseAuth>
         </div>
     );
 }
