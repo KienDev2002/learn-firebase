@@ -4,6 +4,8 @@ import {
     addDoc,
     deleteDoc,
     doc,
+    onSnapshot,
+    snapshotEqual,
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { db } from "./firebase-config";
@@ -15,22 +17,37 @@ const FirebaseApp = () => {
     const [title, setTitle] = useState("");
     const [author, setAuthor] = useState("");
     const [postId, setPostId] = useState("");
+    const [posts, setPosts] = useState([]);
 
     useEffect(() => {
-        getDocs(colRef)
-            .then((snapshot) => {
-                const posts = [];
-                snapshot.docs.forEach((doc) => {
-                    posts.push({
-                        id: doc.id,
-                        ...doc.data(),
-                    });
-                });
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+        //1. ko phải realtime
+        // getDocs(colRef)
+        //     .then((snapshot) => {
+        //         const posts = [];
+        //         snapshot.docs.forEach((doc) => {
+        //             posts.push({
+        //                 id: doc.id,
+        //                 ...doc.data(),
+        //             });
+        //         });
+        //         setPosts(posts);
+        //     })
+        //     .catch((error) => {
+        //         console.log(error);
+        //     });
         // eslint-disable-next-line react-hooks/exhaustive-deps
+
+        // 2. get document in realtime: ko cần reload trang vẫn hiển thị ngay
+        onSnapshot(colRef, (snapshot) => {
+            const posts = [];
+            snapshot.docs.forEach((doc) => {
+                posts.push({
+                    id: doc.id,
+                    ...doc.data(),
+                });
+            });
+            setPosts(posts);
+        });
     }, []);
 
     const handleAddPost = (e) => {
@@ -104,6 +121,16 @@ const FirebaseApp = () => {
                             Submit
                         </button>
                     </form>
+                </div>
+                <div className="w-full max-w-[500px] mx-auto bg-white shadow-lg p-5">
+                    {posts.length > 0 &&
+                        posts.map((item) => (
+                            <div key={item.title}>
+                                <div>
+                                    {item.title} - {item.author}
+                                </div>
+                            </div>
+                        ))}
                 </div>
             </div>
         </div>
